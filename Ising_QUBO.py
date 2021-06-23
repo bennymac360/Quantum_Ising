@@ -10,16 +10,16 @@ from numpy.random import rand
 from dwave.system import DWaveSampler, EmbeddingComposite
 import dwave.inspector
 import dimod
-from numba import jit
+
 
 def get_token():
     '''Return your personal access token'''
     
     # TODO: Enter your token here
-    return 'trn-03364b531fc5964f035a363579545e5b9693d9a8'
+    return 'DEV-aa60123b45c8ffd88aabc6ab22ae723efe81e6e8'
 
 
-Lx=10
+Lx=3
 N=Lx**2
 np.random.seed(23451)
 J = (np.random.normal(0.0,1.0,size=(N,2)))
@@ -64,7 +64,7 @@ def get_Js(J=J,Lx=Lx):
             # Js.update({(kU,k):JU}) 
     return Js
 
-@jit(nopython=True)
+
 def econf(S0,Lx=Lx,J=J):
   energy = 0.
   for i in range(Lx):
@@ -84,14 +84,13 @@ def run_on_qpu(Js,hs, sampler):
         Q(dict): a representation of a QUBO
         sampler(dimod.Sampler): a sampler that uses the QPU
     """
-    # T = 2000
-    # reverse_schedule = [[0,0],  [T, 1]]
+
     sample_set = sampler.sample_ising(h=hs,J=Js, num_reads=numruns, label='Training - Choosing Boxes'\
                                      ,reduce_intersample_correlation=True\
                                          ,programming_thermalization=100\
                                              ,annealing_time = 100\
                                                  ,readout_thermalization=100\
-                                     ,postprocess='sampling',beta=1000,answer_mode='histogram')
+                                     ,postprocess='sampling',beta=2,answer_mode='histogram',chain_strength = 4.0)
 
     return sample_set
 
@@ -99,11 +98,11 @@ def run_on_qpu(Js,hs, sampler):
 if __name__ == "__main__":
 
     
-    numruns = 200
+    numruns = 5
     Js = get_Js()
     
-    bqm = dimod.BQM.from_qubo(Js)
-    sample_set = EmbeddingComposite(DWaveSampler()).sample(bqm, num_reads=numruns)
+    # bqm = dimod.BQM.from_qubo(Js)
+    # sample_set = EmbeddingComposite(DWaveSampler()).sample(bqm, num_reads=numruns)
     
     
     qpu_2000q = DWaveSampler(solver={'topology__type': 'chimera'})
@@ -120,10 +119,7 @@ if __name__ == "__main__":
         for j in range(sample_set.record[i][2]):
             
             S0 = sample_set._record[i]['sample']
-            # for k in range(N):
-            #     if S0[k]   == 0. : S0[k]   = -1.             # Swap the 0 to -1 to change zeros back to -1
-            
-            
+      
             # S0d = np.reshape(S0,(Lx,Lx),order='C')
             # energy = econf(S0d)
             
@@ -137,3 +133,4 @@ if __name__ == "__main__":
     configs = np.asarray(configs)
 
 
+# dwave.inspector.show(sample_set)
