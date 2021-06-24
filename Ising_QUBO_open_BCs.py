@@ -22,7 +22,7 @@ def get_token():
 Lx=3
 N=Lx**2
 np.random.seed(23451)
-J = (np.random.normal(0.0,1.0,size=(N-Lx,2)))
+J = (np.random.normal(0.0,1.0,size=(N-Lx,2)))*-1.
 np.savetxt('coplings.txt',J)
 
 Js = {} 
