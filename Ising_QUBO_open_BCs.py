@@ -75,12 +75,12 @@ def run_on_qpu(Js,hs, sampler):
         sampler(dimod.Sampler): a sampler that uses the QPU
     """
 
-    sample_set = sampler.sample_ising(h=hs,J=Js, num_reads=numruns, label='Training - Choosing Boxes'\
+    sample_set = sampler.sample_ising(h=hs,J=Js, num_reads=numruns, label='ISING Glass open BCs'\
                                      ,reduce_intersample_correlation=True\
-                                         ,programming_thermalization=100\
-                                             ,annealing_time = 100\
-                                                 ,readout_thermalization=100\
-                                     ,postprocess='sampling',beta=2,answer_mode='histogram',chain_strength = 4.0)
+                                         ,programming_thermalization=40\
+                                             ,annealing_time = 20\
+                                                 ,readout_thermalization=40\
+                                     ,postprocess='optimization',beta=2,answer_mode='histogram')
 
     return sample_set
 
